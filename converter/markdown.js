@@ -35,7 +35,6 @@ var parseStrong = function(str) {
   return str;
 }
 
-
  var parseHorizontaleLine = function(str) {
   var horizontalRegExp = /^(?:([\*\-_] ?)+)\1\1$/gm;
   var stra = [];
@@ -49,7 +48,11 @@ var parseStrong = function(str) {
   var linkRegExp = /\[([^\[]+)\]\(([^\)]+)\)/;
   var stra = [];
   while ((stra = linkRegExp.exec(str)) !== null) {
-    str = str.replace(stra[0], '<a ' + 'href="' + stra[2] + '">' + stra[1] + '</a>');
+    if (stra[0].substr(0, 1) === '!') {
+        str = str.replace(stra[0], '<img src="' + stra[2] + '" alt="' + stra[1] + '" title="' + stra[1] + '" />\n');
+    } else {
+        str = str.replace(stra[0], '<a ' + 'href="' + stra[2] + '">' + stra[1] + '</a>');
+    }
   }
   return str;
  }
@@ -64,11 +67,11 @@ var parseNewLine = function(str) {
   return str;
  }
 
- var parseCode = function(str) {
-  var codeRegExp = /`{1}(\w+)`{1}/;
+ var parseCodeBlock = function(str) {
+  var codeRegExp = /```(.*?)```/;
   var stra = [];
   while ((stra = codeRegExp.exec(str)) !== null) {
-    str = str.replace(stra[0], '<pre>' + stra[1] + '</pre>');
+    str = str.replace(stra[0], '<code>' + stra[1] + '</code>');
   }
   return str;
  }
@@ -101,7 +104,7 @@ var markdown = {
     str = parseStrong(str);
     str = parseHorizontaleLine(str);
     str = parseLink(str);
-    str = parseCode(str);
+    str = parseCodeBlock(str);
     str = parseBlockQuote(str);
     str = parseDel(str);
     return str;
